@@ -1,41 +1,25 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 
 @theme {
-  --color-obsidian: #0A0A0F;
-  --color-obsidian-light: #1A1A24;
-  --color-amber-500: #F5C518;
-  --color-amber-400: #FADB5F;
-  --color-platinum: #E5E4E2;
-  --color-emerald-500: #10B981;
-  --color-rose-500: #F43F5E;
+  --color-wwealty-dark: #0f2e26;
+  --color-wwealty-light: #f3f4f6;
+  --color-wwealty-teal: #1e9b8b;
+  --color-wwealty-green: #10b981;
   
-  --font-display: "Playfair Display", serif;
-  --font-mono: "DM Mono", monospace;
+  --font-sans: "Inter", sans-serif;
 }
 
 @layer base {
   body {
-    @apply bg-obsidian text-platinum antialiased;
-    font-family: "DM Mono", monospace;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
-  }
-
-  h1, h2, h3, h4, h5, h6 {
-    @apply font-display;
+    @apply bg-wwealty-light text-slate-800 antialiased;
+    font-family: "Inter", sans-serif;
   }
 }
 
 @layer utilities {
   .glass-card {
-    @apply bg-obsidian-light/60 backdrop-blur-md border border-white/10 shadow-xl;
-  }
-  
-  .glass-card-gold {
-    @apply bg-obsidian-light/60 backdrop-blur-md border border-amber-500/20 shadow-[0_0_15px_rgba(245,197,24,0.05)];
-  }
-
-  .text-glow-amber {
-    text-shadow: 0 0 10px rgba(245, 197, 24, 0.5);
+    @apply bg-white border border-slate-100 shadow-sm rounded-2xl;
   }
   
   .hide-scrollbar::-webkit-scrollbar {
