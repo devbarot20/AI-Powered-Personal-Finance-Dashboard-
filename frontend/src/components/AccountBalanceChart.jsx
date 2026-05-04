@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { mockData } from '../data/mockData';
 
 const CustomTooltip = ({ active, payload }) => {
   if (active && payload && payload.length) {
@@ -16,9 +15,11 @@ const CustomTooltip = ({ active, payload }) => {
   return null;
 };
 
-export default function AccountBalanceChart() {
+export default function AccountBalanceChart({ chartData }) {
   const [activeFilter, setActiveFilter] = useState('Month');
   const filters = ['Day', 'Week', 'Month', 'Year'];
+
+  if (!chartData) return null;
 
   return (
     <div className="glass-card p-4 sm:p-6 h-full">
@@ -43,7 +44,7 @@ export default function AccountBalanceChart() {
       
       <div className="h-64 w-full">
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={mockData.accountBalance.chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+          <LineChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
             <XAxis 
               dataKey="name" 

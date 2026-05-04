@@ -14,6 +14,8 @@ import { ReportsView } from './components/views/ReportsView';
 import { SettingsView } from './components/views/SettingsView';
 import { ContactView } from './components/views/ContactView';
 
+import { getDashboardData } from './services/api';
+
 export function cn(...inputs) { return twMerge(clsx(inputs)); }
 
 const PAGE_TITLES = {
@@ -26,17 +28,27 @@ const PAGE_TITLES = {
   contact:     { title: 'Contact Us',   sub: 'Have a question? We are here to help.' },
 };
 
-function OverviewContent() {
+function OverviewContent({ data }) {
+  if (!data) return <div className="flex items-center justify-center h-64 text-slate-400">Loading dashboard...</div>;
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       {/* Account balance spans 2 cols on lg */}
-      <div className="lg:col-span-2"><AccountBalanceChart /></div>
+      <div className="lg:col-span-2">
+        <AccountBalanceChart chartData={data.accountBalance.chartData} />
+      </div>
       {/* Balance cards span 1 col on lg, but become mini-grid on tablet/desktop and stack on small mobile */}
-      <div className="lg:col-span-1"><BalanceCards /></div>
+      <div className="lg:col-span-1">
+        <BalanceCards balances={data.balances} />
+      </div>
       {/* Transactions spans 2 cols on lg */}
-      <div className="lg:col-span-2"><RecentTransactions /></div>
+      <div className="lg:col-span-2">
+        <RecentTransactions transactions={data.recentTransactions} />
+      </div>
       {/* Investments spans 1 col */}
-      <div className="lg:col-span-1"><InvestmentsChart /></div>
+      <div className="lg:col-span-1">
+        <InvestmentsChart investments={data.investments} />
+      </div>
     </div>
   );
 }
@@ -44,17 +56,26 @@ function OverviewContent() {
 export default function FinanceDashboard({ user, onLogout }) {
   const [activeTab, setActiveTab] = useState('overview');
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [dashboardData, setDashboardData] = useState(null);
+
+  React.useEffect(() => {
+    getDashboardData().then(data => {
+      setDashboardData(data);
+    }).catch(err => {
+      console.error('Failed to fetch dashboard data:', err);
+    });
+  }, []);
 
   const renderContent = () => {
     switch (activeTab) {
-      case 'overview':    return <OverviewContent />;
+      case 'overview':    return <OverviewContent data={dashboardData} />;
       case 'budgets':     return <BudgetsView />;
       case 'expenses':    return <ExpensesView />;
       case 'investments': return <InvestmentsView />;
       case 'reports':     return <ReportsView />;
       case 'settings':    return <SettingsView user={user} />;
       case 'contact':     return <ContactView />;
-      default:            return <OverviewContent />;
+      default:            return <OverviewContent data={dashboardData} />;
     }
   };
 

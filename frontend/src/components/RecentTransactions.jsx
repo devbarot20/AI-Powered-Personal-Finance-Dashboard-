@@ -1,7 +1,7 @@
 import React from 'react';
-import { mockData } from '../data/mockData';
 
-export default function RecentTransactions() {
+export default function RecentTransactions({ transactions }) {
+  if (!transactions) return null;
   return (
     <div className="glass-card p-4 sm:p-6 h-full">
       <div className="flex justify-between items-center mb-6">
@@ -23,7 +23,7 @@ export default function RecentTransactions() {
             </tr>
           </thead>
           <tbody>
-            {mockData.recentTransactions.map((tx, idx) => (
+            {transactions.map((tx, idx) => (
               <tr key={tx.id} className="border-b border-slate-50 last:border-0 hover:bg-slate-50 transition-colors">
                 <td className="py-4">
                   <div className="flex items-center gap-3">

@@ -1,6 +1,4 @@
-import React from 'react';
 import { Coins, Wallet, PiggyBank, MoreHorizontal } from 'lucide-react';
-import { mockData } from '../data/mockData';
 
 const Card = ({ title, amount, trend, isPositive, Icon }) => (
   <div className="glass-card p-3 sm:p-5 flex flex-col justify-between">
@@ -29,8 +27,9 @@ const Card = ({ title, amount, trend, isPositive, Icon }) => (
   </div>
 );
 
-export default function BalanceCards() {
-  const { total, main, savings } = mockData.balances;
+export default function BalanceCards({ balances }) {
+  if (!balances) return null;
+  const { total, main, savings } = balances;
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-1 gap-4 h-full">

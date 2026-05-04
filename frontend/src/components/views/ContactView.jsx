@@ -1,19 +1,24 @@
 import React, { useState } from 'react';
 import { Send, CheckCircle, Mail, Phone, MapPin } from 'lucide-react';
+import { sendContactMessage } from '../../services/api';
 
 export function ContactView() {
   const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' });
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!form.name || !form.email || !form.message) return;
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
+    try {
+      await sendContactMessage(form);
       setSubmitted(true);
-    }, 1500);
+    } catch (err) {
+      console.error('Failed to send message:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

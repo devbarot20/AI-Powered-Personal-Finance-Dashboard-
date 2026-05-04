@@ -1,34 +1,58 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { PlusCircle, Trash2, ShoppingCart, Home, Car, Coffee, Film, Zap } from 'lucide-react';
+import { getExpenses, addExpense, deleteExpense } from '../../services/api';
 
 const ICONS = { Shopping: ShoppingCart, Housing: Home, Transport: Car, Food: Coffee, Entertainment: Film, Utilities: Zap };
 const CATEGORIES = ['Food', 'Transport', 'Shopping', 'Housing', 'Entertainment', 'Utilities', 'Other'];
 
-const INITIAL_EXPENSES = [
-  { id: 1, description: 'Whole Foods', category: 'Food', amount: 4500, date: '2026-05-03' },
-  { id: 2, description: 'Uber', category: 'Transport', amount: 850, date: '2026-05-03' },
-  { id: 3, description: 'Netflix', category: 'Entertainment', amount: 649, date: '2026-05-02' },
-  { id: 4, description: 'Rent', category: 'Housing', amount: 27440, date: '2026-05-01' },
-  { id: 5, description: 'Electricity Bill', category: 'Utilities', amount: 3200, date: '2026-04-30' },
-  { id: 6, description: 'Amazon', category: 'Shopping', amount: 3200, date: '2026-04-28' },
-];
-
 export function ExpensesView() {
-  const [expenses, setExpenses] = useState(INITIAL_EXPENSES);
+  const [expenses, setExpenses] = useState([]);
   const [showAdd, setShowAdd] = useState(false);
   const [filterCategory, setFilterCategory] = useState('All');
   const [form, setForm] = useState({ description: '', category: 'Food', amount: '', date: new Date().toISOString().slice(0, 10) });
+  const [loading, setLoading] = useState(true);
 
-  const handleAdd = (e) => {
+  useEffect(() => {
+    fetchExpenses();
+  }, []);
+
+  const fetchExpenses = async () => {
+    try {
+      const data = await getExpenses();
+      setExpenses(data);
+    } catch (err) {
+      console.error('Failed to fetch expenses:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAdd = async (e) => {
     e.preventDefault();
     if (!form.description || !form.amount) return;
-    setExpenses(prev => [{ id: Date.now(), ...form, amount: parseFloat(form.amount) }, ...prev]);
-    setForm({ description: '', category: 'Food', amount: '', date: new Date().toISOString().slice(0, 10) });
-    setShowAdd(false);
+    try {
+      const newExp = await addExpense({ ...form, amount: parseFloat(form.amount) });
+      setExpenses(prev => [newExp, ...prev]);
+      setForm({ description: '', category: 'Food', amount: '', date: new Date().toISOString().slice(0, 10) });
+      setShowAdd(false);
+    } catch (err) {
+      console.error('Failed to add expense:', err);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      await deleteExpense(id);
+      setExpenses(prev => prev.filter(x => x.id !== id));
+    } catch (err) {
+      console.error('Failed to delete expense:', err);
+    }
   };
 
   const filtered = filterCategory === 'All' ? expenses : expenses.filter(e => e.category === filterCategory);
-  const total = filtered.reduce((s, e) => s + e.amount, 0);
+  const total = filtered.reduce((s, e) => s + (e.amount || 0), 0);
+
+  if (loading) return <div className="flex items-center justify-center h-64 text-slate-400">Loading expenses...</div>;
 
   return (
     <div className="space-y-6">
@@ -94,7 +118,7 @@ export function ExpensesView() {
                     <td className="py-3 text-sm text-slate-500">{new Date(exp.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</td>
                     <td className="py-3 text-right font-mono font-semibold text-rose-500">-${exp.amount.toLocaleString()}</td>
                     <td className="py-3 text-right">
-                      <button onClick={() => setExpenses(prev => prev.filter(x => x.id !== exp.id))} className="opacity-0 group-hover:opacity-100 text-slate-300 hover:text-rose-500 transition-all">
+                      <button onClick={() => handleDelete(exp.id)} className="opacity-0 group-hover:opacity-100 text-slate-300 hover:text-rose-500 transition-all">
                         <Trash2 className="w-4 h-4" />
                       </button>
                     </td>

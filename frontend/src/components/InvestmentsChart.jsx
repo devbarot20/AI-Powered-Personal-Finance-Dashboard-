@@ -1,10 +1,10 @@
 import React from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 import { MoreHorizontal } from 'lucide-react';
-import { mockData } from '../data/mockData';
 
-export default function InvestmentsChart() {
-  const { total, trend, isPositive, returnAmount, assets } = mockData.investments;
+export default function InvestmentsChart({ investments }) {
+  if (!investments) return null;
+  const { total, trend, isPositive, returnAmount, assets } = investments;
   
   // Data for the gauge/half-donut chart
   const data = assets.map(asset => ({ name: asset.name, value: 25, color: asset.color }));
